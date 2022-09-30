@@ -1,0 +1,33 @@
+name: 'AWS S3 Sync Action'
+description: 'Sync files to s3 with compare and create cloudfront invalidation.'
+author: wxul
+inputs:
+  aws_bucket_name:
+    description: Bucket name
+    required: true
+
+  aws_bucket_dir:
+    description: Bucket prefix
+    required: false
+
+  acl:
+    description: ACL (like:public-read, default is empty)
+    required: false
+    default: private
+
+  compare:
+    description: Compare ETag with s3 existed files
+    required: false
+    default: "true"
+
+  source:
+    description: Source file
+    required: true
+
+outputs:
+  error_message:
+    description: The error message, if an error occurs
+
+runs:
+  using: 'node16'
+  main: 'lib/index.js'
