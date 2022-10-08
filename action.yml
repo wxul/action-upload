@@ -10,6 +10,10 @@ inputs:
     description: Bucket prefix
     required: false
 
+  aws_cloudfront_distribution_id:
+    description: Cloudfront distribution id
+    required: false
+
   acl:
     description: ACL (like:public-read, default is empty)
     required: false
@@ -24,9 +28,15 @@ inputs:
     description: Source file
     required: true
 
+  filename:
+    description: Rename file name
+    required: false
+
 outputs:
   error_message:
     description: The error message, if an error occurs
+  invalidation_id:
+    description: Cloudfront invalidation id if Created
 
 runs:
   using: 'node16'

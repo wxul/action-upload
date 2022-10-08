@@ -62,6 +62,6 @@ export function encodeUrl(str: string) {
   return str.replace(/[~]/gi, "%7E");
 }
 
-export function convertPath(str: string) {
-  return str.replace(/\\/g, "/");
+export function toPosixPath(pth: string): string {
+  return pth.replace(/[\\]/g, "/");
 }

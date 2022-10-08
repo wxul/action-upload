@@ -3,7 +3,7 @@ import { Config, S3 } from "aws-sdk";
 import { readFileSync } from "fs";
 import { basename, join } from "path";
 import { AWSHelper } from "./aws";
-import { checkFileExist } from "./utils";
+import { checkFileExist, toPosixPath } from "./utils";
 
 process.env["AWS_OUTPUT"] = "json";
 
@@ -13,14 +13,15 @@ async function run() {
 
   const source = core.getInput("source", { required: true });
   let prefix = core.getInput("aws_bucket_dir") ?? "";
-  prefix = prefix.replace(/^\//, "");
+  prefix = toPosixPath(prefix).replace(/^\//, "");
   const compare = core.getInput("compare").toLowerCase() === "true";
   const acl = core.getInput("acl");
+  const filename = core.getInput("filename");
+  const distributionId = core.getInput("aws_cloudfront_distribution_id");
 
   // check path
-  const existed = checkFileExist(source);
   const fileName = basename(source);
-  const key = join(prefix, fileName);
+  const key = toPosixPath(join(prefix, filename || fileName));
 
   // create s3
   const credentials = await AWSHelper.GetCredentials();
@@ -52,6 +53,22 @@ async function run() {
   core.info(`Uploaded: ${source} To: ${key}`);
   core.info(JSON.stringify(data, null, 2));
   core.info(`[Time:Upload:End]: ${Date.now() - begin}`);
+
+  // create invalidation
+  if (distributionId) {
+    core.info(`[Time:Invalidation:Begin]: ${Date.now() - begin}`);
+    try {
+      const data = await AWSHelper.CreateInvalidation(distributionId, [key]);
+      core.info("Invalidation Created.");
+      core.setOutput("invalidation_id", data.Invalidation?.Id);
+      core.info(JSON.stringify(data, null, 2));
+    } catch (error) {
+      core.warning("Create invalidation failed");
+      core.warning(error.message);
+    } finally {
+      core.info(`[Time:Invalidation:End]: ${Date.now() - begin}`);
+    }
+  }
 
   core.info(`[Time:End]: ${Date.now() - begin}`);
 }
