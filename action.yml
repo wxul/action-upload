@@ -8,29 +8,25 @@ inputs:
 
   aws_bucket_dir:
     description: Bucket prefix
-    required: false
+    required: true
 
   aws_cloudfront_distribution_id:
     description: Cloudfront distribution id
     required: false
-
-  acl:
-    description: ACL (like:public-read, default is empty)
-    required: false
-    default: private
 
   compare:
     description: Compare ETag with s3 existed files
     required: false
     default: "true"
 
-  source:
-    description: Source file
+  source_src:
+    description: Source iconpark src
     required: true
 
   filename:
     description: Rename file name
     required: false
+    default: iconpark.es5.js
 
 outputs:
   error_message:

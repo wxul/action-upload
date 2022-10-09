@@ -1,9 +1,9 @@
 import * as core from "@actions/core";
 import { Config, S3 } from "aws-sdk";
-import { readFileSync } from "fs";
-import { basename, join } from "path";
+import { join } from "path";
 import { AWSHelper } from "./aws";
-import { checkFileExist, toPosixPath } from "./utils";
+import { toPosixPath } from "./utils";
+import Axios from "axios";
 
 process.env["AWS_OUTPUT"] = "json";
 
@@ -11,16 +11,22 @@ async function run() {
   const begin = Date.now();
   const bucket = core.getInput("aws_bucket_name", { required: true });
 
-  const source = core.getInput("source", { required: true });
+  const source_src = core.getInput("source_src", { required: true });
   let prefix = core.getInput("aws_bucket_dir") ?? "";
   prefix = toPosixPath(prefix).replace(/^\//, "");
   const compare = core.getInput("compare").toLowerCase() === "true";
-  const acl = core.getInput("acl");
+  const acl = "public-read";
   const filename = core.getInput("filename");
   const distributionId = core.getInput("aws_cloudfront_distribution_id");
 
+  const reg = /^https:\/\/.+\.es5\.js$/;
+  if (!reg.test(source_src)) {
+    core.setFailed("[source_src] is wrong!");
+    return;
+  }
+
   // check path
-  const fileName = basename(source);
+  const fileName = filename;
   const key = toPosixPath(join(prefix, filename || fileName));
 
   // create s3
@@ -33,7 +39,14 @@ async function run() {
   // compare files
 
   let needUpload = true;
-  const file = readFileSync(source);
+  core.info(`[Time:Download:Begin]: ${Date.now() - begin}`);
+  const { data: file } = await Axios({
+    method: "get",
+    url: source_src,
+    responseType: "arraybuffer",
+  });
+  core.info(`[Time:Download:End]: ${Date.now() - begin}`);
+
   if (compare) {
     core.info(`[Time:Compare:Begin]: ${Date.now() - begin}`);
 
@@ -50,7 +63,7 @@ async function run() {
   // upload
   core.info(`[Time:Upload:Begin]: ${Date.now() - begin}`);
   const data = await AWSHelper.UploadFile(s3, bucket, key, file, acl);
-  core.info(`Uploaded: ${source} To: ${key}`);
+  core.info(`Uploaded To: ${key}`);
   core.info(JSON.stringify(data, null, 2));
   core.info(`[Time:Upload:End]: ${Date.now() - begin}`);
 
