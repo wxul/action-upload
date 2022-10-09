@@ -3,7 +3,7 @@ import { Config, S3 } from "aws-sdk";
 import { join } from "path";
 import { AWSHelper } from "./aws";
 import { toPosixPath } from "./utils";
-import Axios from "axios";
+import * as axios from "axios";
 
 process.env["AWS_OUTPUT"] = "json";
 
@@ -40,7 +40,7 @@ async function run() {
 
   let needUpload = true;
   core.info(`[Time:Download:Begin]: ${Date.now() - begin}`);
-  const { data: file } = await Axios.get(source_src, {
+  const { data: file } = await (axios as any).get(source_src, {
     method: "get",
     responseType: "arraybuffer",
   });
