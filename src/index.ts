@@ -40,9 +40,8 @@ async function run() {
 
   let needUpload = true;
   core.info(`[Time:Download:Begin]: ${Date.now() - begin}`);
-  const { data: file } = await Axios({
+  const { data: file } = await Axios.get(source_src, {
     method: "get",
-    url: source_src,
     responseType: "arraybuffer",
   });
   core.info(`[Time:Download:End]: ${Date.now() - begin}`);
