@@ -10,12 +10,12 @@ process.env["AWS_OUTPUT"] = "json";
 async function run() {
   const begin = Date.now();
   const bucket = core.getInput("aws_bucket_name", { required: true });
+  const acl = core.getInput("aws_bucket_acl");
 
   const source_src = core.getInput("source_src", { required: true });
   let prefix = core.getInput("aws_bucket_dir") ?? "";
   prefix = toPosixPath(prefix).replace(/^\//, "");
   const compare = core.getInput("compare").toLowerCase() === "true";
-  const acl = "public-read";
   const filename = core.getInput("filename");
   const distributionId = core.getInput("aws_cloudfront_distribution_id");
 
