@@ -40,5 +40,5 @@ outputs:
     description: Cloudfront invalidation id if Created
 
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'lib/index.js'
