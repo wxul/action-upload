@@ -2,12 +2,20 @@
 
 Sync files to s3
 
+## Release
+
+1. Clone
+2. `npm i`
+3. Install `@vercel/ncc` : `npm i -g @vercel/ncc` (skip if installed)
+4. `npm run build`
+5. Push
+
 ## Inputs
 
 ## Example usage
 
 ``` yml
-uses: surreal-ai/action-upload@master
+uses: wxul/action-upload@master
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  ## AWS_ACCESS_KEY_ID
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }} ## AWS_ACCESS_KEY_ID
