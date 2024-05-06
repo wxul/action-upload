@@ -19,6 +19,10 @@ inputs:
     required: false
     default: private
 
+  sse:
+    description: The server-side encryption algorithm used when storing this object in Amazon S3 (for example, AES256, aws:kms)
+    required: false
+
   compare:
     description: Compare ETag with s3 existed files
     required: false

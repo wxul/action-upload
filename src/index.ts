@@ -16,6 +16,7 @@ async function run() {
   prefix = toPosixPath(prefix).replace(/^\//, "");
   const compare = core.getInput("compare").toLowerCase() === "true";
   const acl = core.getInput("acl");
+  const sse = core.getInput("sse");
   const filename = core.getInput("filename");
   const distributionId = core.getInput("aws_cloudfront_distribution_id");
 
@@ -49,7 +50,7 @@ async function run() {
 
   // upload
   core.info(`[Time:Upload:Begin]: ${Date.now() - begin}`);
-  const data = await AWSHelper.UploadFile(s3, bucket, key, file, acl);
+  const data = await AWSHelper.UploadFile(s3, bucket, key, file, { acl, sse });
   core.info(`Uploaded: ${source} To: ${key}`);
   core.info(JSON.stringify(data, null, 2));
   core.info(`[Time:Upload:End]: ${Date.now() - begin}`);
