@@ -11,6 +11,7 @@ async function run() {
   const begin = Date.now();
   const bucket = core.getInput("aws_bucket_name", { required: true });
   const acl = core.getInput("aws_bucket_acl");
+  const sse = core.getInput("aws_bucket_sse");
 
   const source_src = core.getInput("source_src", { required: true });
   let prefix = core.getInput("aws_bucket_dir") ?? "";
@@ -61,7 +62,7 @@ async function run() {
 
   // upload
   core.info(`[Time:Upload:Begin]: ${Date.now() - begin}`);
-  const data = await AWSHelper.UploadFile(s3, bucket, key, file, acl);
+  const data = await AWSHelper.UploadFile(s3, bucket, key, file, { acl, sse });
   core.info(`Uploaded To: ${key}`);
   core.info(JSON.stringify(data, null, 2));
   core.info(`[Time:Upload:End]: ${Date.now() - begin}`);
